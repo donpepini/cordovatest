@@ -4,7 +4,7 @@
     <div v-show="showCarousel" class="carouselMap">
       <p>{{shopName}}</p>
       <p>{{shopAddress}}</p>
-      <slick  ref="slick" :options="slickOptions">
+      <slick ref="slick" :options="slickOptions">
         <img
           class="sizing"
           v-bind:key="index"
@@ -44,6 +44,8 @@ export default {
       },
       google: "",
       map: "",
+      directionsService: "",
+      directionsDisplay: "",
       shops: shops,
       shopName: "",
       shopAddress: "",
@@ -68,12 +70,14 @@ export default {
       this.isSelected = name;
 
       const marker = this.markers.filter(el => el.name === name)[0];
-      if(this.previous.name){
-        if(this.previous.name !== name){
-          this.previous.marker.setIcon('https://www.google.com/mapfiles/marker_purple.png');
+      if (this.previous.name) {
+        if (this.previous.name !== name) {
+          this.previous.marker.setIcon(
+            "https://www.google.com/mapfiles/marker_purple.png"
+          );
         }
       }
-      marker.setIcon('https://www.google.com/mapfiles/marker_green.png');
+      marker.setIcon("https://www.google.com/mapfiles/marker_green.png");
       this.previous.name = name;
       this.previous.marker = marker;
     },
@@ -82,7 +86,7 @@ export default {
       const google = this.google;
       const map = this.map;
 
-      const icon = 'https://www.google.com/mapfiles/marker_purple.png';
+      const icon = "https://www.google.com/mapfiles/marker_purple.png";
       const markers = shops.map((shop, i) => {
         const marker = new google.maps.Marker({ ...shop, icon, map });
         marker.addListener("click", () => {
@@ -103,33 +107,16 @@ export default {
       // Create the DIV to hold the control and call the constructor passing in this DIV
       const geolocationDiv = document.createElement("div");
       const geolocationControl = new GeolocationControl(geolocationDiv, map);
-      map.controls[google.maps.ControlPosition.LEFT_TOP].push(geolocationDiv);
+      map.controls[google.maps.ControlPosition.RIGHT_TOP].push(geolocationDiv);
 
       function GeolocationControl(controlDiv, map) {
-        // Set CSS for the control button
-        var controlUI = document.createElement("div");
-        controlUI.style.backgroundColor = "#444";
-        controlUI.style.borderStyle = "solid";
-        controlUI.style.borderWidth = "1px";
-        controlUI.style.borderColor = "white";
-        controlUI.style.height = "28px";
-        controlUI.style.margin = "10px";
+        var controlUI = document.createElement("img");
+        controlUI.src = require("../assets/gps.svg");
+        controlUI.style.width = "30px";
         controlUI.style.marginTop = "15px";
+        controlUI.style.marginRight = "20px";
         controlUI.style.cursor = "pointer";
-        controlUI.style.textAlign = "center";
-        controlUI.title = "Click to center map on your location";
         controlDiv.appendChild(controlUI);
-
-        // Set CSS for the control text
-        var controlText = document.createElement("div");
-        controlText.style.fontFamily = "Arial,sans-serif";
-        controlText.style.fontSize = "10px";
-        controlText.style.color = "white";
-        controlText.style.paddingLeft = "10px";
-        controlText.style.paddingRight = "10px";
-        controlText.style.marginTop = "8px";
-        controlText.innerHTML = "Center map on your location";
-        controlUI.appendChild(controlText);
 
         // Setup the click event listeners to geolocate user
         google.maps.event.addDomListener(controlUI, "click", that.geolocate);
@@ -154,7 +141,7 @@ export default {
 
           // Create a marker and center map on user location
           // const icon = require("../assets/yourPosition.png");
-          const icon = 'https://www.google.com/mapfiles/marker_orange.png';
+          const icon = "https://www.google.com/mapfiles/marker_orange.png";
           const marker = new google.maps.Marker({
             icon: icon,
             position: actualPosition,
@@ -185,16 +172,21 @@ export default {
       document.getElementById("renderMap"),
       mapOptions
     );
+    const directionsService = new google.maps.DirectionsService();
+    const directionsDisplay = new google.maps.DirectionsRenderer({
+      map: map
+    });
 
     this.google = google;
     this.map = map;
+    this.directionsService = directionsService;
+    this.directionsDisplay = directionsDisplay;
     this.geolocationInit();
     this.getShopsMarkers();
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 html,
 body {
@@ -226,7 +218,6 @@ body {
 .sizing {
   width: 70%;
 }
-
 </style>
 
 
