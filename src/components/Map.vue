@@ -161,6 +161,7 @@ export default {
   },
 
   async mounted() {
+    console.log(process.env.GMAPS_API_KEY, "YOOOOO")
     const google = await gmapsInit();
     // const geocoder = new google.maps.Geocoder();
     const mapOptions = {
